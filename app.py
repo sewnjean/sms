@@ -40,7 +40,9 @@ def train_or_load_model(df):
         # Optionally show performance in the app
         y_pred = model.predict(X_test_vec)
         accuracy = accuracy_score(y_test, y_pred)
-        st.info(f"Model trained with accuracy: {accuracy:.4f}")
+        print(f"✅ Model trained. Accuracy: {accuracy:.4f}")
+        print("\nClassification Report:")
+        print(classification_report(y_test, y_pred))
     return model, vectorizer
 
 # Load data and train or load model
