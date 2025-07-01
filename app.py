@@ -17,33 +17,37 @@ def load_data():
 
 # Train and save model
 @st.cache_resource
+@st.cache_resource
 def train_or_load_model(df):
+    X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], test_size=0.3, random_state=42)
+    vectorizer = CountVectorizer()
+    X_train_vec = vectorizer.fit_transform(X_train)
+    X_test_vec = vectorizer.transform(X_test)
+
     if os.path.exists("model.pkl") and os.path.exists("vectorizer.pkl"):
         with open("model.pkl", "rb") as f:
             model = pickle.load(f)
         with open("vectorizer.pkl", "rb") as f:
             vectorizer = pickle.load(f)
     else:
-        X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], test_size=0.3, random_state=42)
-        vectorizer = CountVectorizer()
-        X_train_vec = vectorizer.fit_transform(X_train)
-        X_test_vec = vectorizer.transform(X_test)
         model = MultinomialNB()
         model.fit(X_train_vec, y_train)
 
-        y_pred = model.predict(X_test_vec)
-        accuracy = accuracy_score(y_test, y_pred)
-        print(f"✅ Model trained. Accuracy: {accuracy:.4f}")
-        print("\nClassification Report:")
-        print(classification_report(y_test, y_pred))
-
-        # Save model and vectorizer
+        # Save the trained model and vectorizer
         with open("model.pkl", "wb") as f:
             pickle.dump(model, f)
-
         with open("vectorizer.pkl", "wb") as f:
             pickle.dump(vectorizer, f)
+
+    # Predict and evaluate regardless of whether the model was trained or loaded
+    y_pred = model.predict(X_test_vec)
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"✅ Model accuracy: {accuracy:.4f}")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred))
+
     return model, vectorizer
+
 
 # Load data and train or load model
 df = load_data()
