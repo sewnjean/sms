@@ -31,18 +31,18 @@ def train_or_load_model(df):
         model = MultinomialNB()
         model.fit(X_train_vec, y_train)
 
-        # Save the trained model and vectorizer
-        with open("model.pkl", "wb") as f:
-            pickle.dump(model, f)
-        with open("vectorizer.pkl", "wb") as f:
-            pickle.dump(vectorizer, f)
-
-        # Optionally show performance in the app
         y_pred = model.predict(X_test_vec)
         accuracy = accuracy_score(y_test, y_pred)
         print(f"✅ Model trained. Accuracy: {accuracy:.4f}")
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
+
+        # Save model and vectorizer
+        with open("model.pkl", "wb") as f:
+            pickle.dump(model, f)
+
+        with open("vectorizer.pkl", "wb") as f:
+            pickle.dump(vectorizer, f)
     return model, vectorizer
 
 # Load data and train or load model
